@@ -1,5 +1,6 @@
 import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
 import BadRequestError from "./BadRequestError";
+import ForbiddenError from "./ForbiddenError";
 import InternalServerError from "./InternalServerError";
 
 const throwJSONParseError = (
@@ -30,4 +31,18 @@ const throwInternalServerError = (
   );
 };
 
-export { throwJSONParseError, throwInternalServerError };
+const throwForbiddenError = (
+  message: string,
+  errorCode?: SpentAPIExceptionCodes,
+  errors?: any,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new ForbiddenError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.UNVERIFIED_APP,
+    errors,
+    statusCode
+  );
+};
+
+export { throwJSONParseError, throwInternalServerError, throwForbiddenError };
