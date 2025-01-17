@@ -1,5 +1,6 @@
 import * as jwt from "jsonwebtoken";
 import { secrets } from "src/constants";
+import { ItemRequest, ReceiptRequest } from "src/types/request";
 
 const userID = (initials: string): string => {
   const userIdLength = 18;
@@ -26,4 +27,29 @@ const JWToken = (userId: string): string => {
   });
 };
 
-export default { userID, JWToken };
+const receiptID = (receipt: ReceiptRequest): string => {
+  let receiptId: string = "";
+
+  receiptId += receipt.merchantName
+    .split(" ")
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
+  receiptId += receipt.date.split("-").join("");
+  receiptId = `${receiptId}-${receipt.items.length}`;
+
+  return receiptId;
+};
+
+const itemID = (item: ItemRequest, date: string, idx: number): string => {
+  let itemId: string = `IT${idx + 1}`;
+
+  itemId += item.description
+    .split(" ")
+    .map((word) => word[0].toUpperCase())
+    .join("");
+  itemId += date.split("-").join("");
+  return itemId;
+};
+
+export default { userID, JWToken, receiptID, itemID };
