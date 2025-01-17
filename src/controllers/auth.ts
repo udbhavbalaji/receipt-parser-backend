@@ -92,7 +92,6 @@ const handleLogin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const handleMe = (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.headers.user_id as string;
   if (req.headers.logout_required === "Y") {
     return {
       status: HTTPStatusCodes.REDIRECT_REQUIRED,
@@ -103,6 +102,8 @@ const handleMe = (req: Request, res: Response, next: NextFunction) => {
       },
     };
   }
+
+  const userId = req.headers.user_id as string;
 
   return User.getByID(userId, [
     "first_name",
@@ -121,13 +122,37 @@ const handleMe = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-const handleLogout = (req: Request, res: Response, next: NextFunction) => {};
+const handleLogout = (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.headers.user_id as string;
 
-const handleDeleteUser = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+  return User.logOut(userId).then(() => {
+    return {
+      status: HTTPStatusCodes.OK,
+      responseBody: { message: messages.LogOutMessage },
+    };
+  });
+};
+
+const handleDeleteUser = (req: Request, res: Response, next: NextFunction) => {
+  if (req.headers.logout_required === "Y") {
+    return {
+      status: HTTPStatusCodes.REDIRECT_REQUIRED,
+      responseBody: {
+        message: "User must be logged out immediately",
+        redirectTo: "/api/auth/logout",
+        method: "PUT",
+      },
+    };
+  }
+
+  const userId = req.headers.user_id as string;
+
+  return User.deleteById(userId).then(() => {
+    return {
+      status: HTTPStatusCodes.NO_CONTENT,
+    };
+  });
+};
 
 export default {
   handleRegisterUser,

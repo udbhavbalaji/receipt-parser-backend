@@ -48,4 +48,22 @@ const logIn = (userId: string, token: string) => {
     });
 };
 
-export default { create, getByEmail, logIn, getByID };
+const logOut = (userId: string) => {
+  return db("users")
+    .where("user_id", userId)
+    .update({ logged_in: "N" })
+    .catch((err) => {
+      throw throwDatabaseManipulationError(err);
+    });
+};
+
+const deleteById = (userId: string) => {
+  return db("users")
+    .where("user_id", userId)
+    .del()
+    .catch((err) => {
+      throw throwDatabaseManipulationError(err);
+    });
+};
+
+export default { create, getByEmail, logIn, getByID, logOut, deleteById };
