@@ -8,7 +8,7 @@ const authRouter = Router();
 authRouter.post(
   "/register-user",
   verifyApp.handle,
-  // validation.handle(register),
+  validation.handle(register),
   error.handle(controller.handleRegisterUser)
 );
 

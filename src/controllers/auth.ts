@@ -11,8 +11,7 @@ const handleRegisterUser = (
   res: Response,
   next: NextFunction
 ) => {
-  // const validatedUserDetails = req.body.validated;
-  const validatedUserDetails = req.body;
+  const validatedUserDetails = req.body.validated;
 
   return user
     .getByEmail(validatedUserDetails.email)
