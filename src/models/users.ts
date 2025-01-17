@@ -25,6 +25,17 @@ const getByEmail = (email: string, cols?: Array<keyof UserDB>) => {
     });
 };
 
+const getByID = (userId: string, cols?: Array<keyof UserDB>) => {
+  return db
+    .select(cols ?? "*")
+    .from("users")
+    .where({ user_id: userId })
+    .first()
+    .catch((err) => {
+      throw throwDatabaseQueryError(err);
+    });
+};
+
 const logIn = (userId: string, token: string) => {
   return db("users")
     .where("user_id", userId)
@@ -37,4 +48,4 @@ const logIn = (userId: string, token: string) => {
     });
 };
 
-export default { create, getByEmail, logIn };
+export default { create, getByEmail, logIn, getByID };

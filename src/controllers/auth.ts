@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { user as User } from "../models";
-import { throwBadRequestError, throwForbiddenError } from "../errors";
+import {
+  throwBadRequestError,
+  throwForbiddenError,
+  throwUnauthorizedActionError,
+} from "../errors";
 import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
 import { generate, transform, verify } from "../utils";
 import { UserDB } from "../types/database";
@@ -85,25 +89,37 @@ const handleLogin = (req: Request, res: Response, next: NextFunction) => {
     .then((token) => {
       return { status: HTTPStatusCodes.OK, responseBody: { token: token } };
     });
-
-  // return verify
-  //   .password(password, user.password)
-  //   .then((_) => user)
-  //   .then((user) => {
-  //     const token = generate.JWToken(user.user_id);
-  //     return { user, token };
-  //   })
-  //   .then(({ user, token }) => {
-  //     return User.logIn(user.user_id, token).then(() => {
-  //       return token;
-  //     });
-  //   })
-  //   .then((token) => {
-  //     return { status: HTTPStatusCodes.OK, responseBody: { token: token } };
-  //   });
 };
 
-const handleMe = (req: Request, res: Response, next: NextFunction) => {};
+const handleMe = (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.headers.user_id as string;
+  if (req.headers.logout_required === "Y") {
+    return {
+      status: HTTPStatusCodes.REDIRECT_REQUIRED,
+      responseBody: {
+        message: "User must be logged out",
+        redirectTo: "/api/auth/me",
+        method: "PUT",
+      },
+    };
+  }
+
+  return User.getByID(userId, [
+    "first_name",
+    "last_name",
+    "email",
+    "user_id",
+    "logged_in",
+  ]).then((user) => {
+    if (!user) {
+      throw throwUnauthorizedActionError(
+        "Auth Handler didn't work properly, Jwt malformed",
+        SpentAPIExceptionCodes.JWT_ERROR
+      );
+    }
+    return { status: HTTPStatusCodes.OK, responseBody: { user } };
+  });
+};
 
 const handleLogout = (req: Request, res: Response, next: NextFunction) => {};
 

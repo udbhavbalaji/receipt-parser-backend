@@ -2,7 +2,9 @@ import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
 import BadRequestError from "./BadRequestError";
 import ForbiddenError from "./ForbiddenError";
 import InternalServerError from "./InternalServerError";
+import JWTokenError from "./JWTokenError";
 import SpentDatabaseError from "./SpentDatabaseError";
+import UnauthorizedActionError from "./UnauthorizedActionError";
 import UnprocessableEntityError from "./UnprocessableEntityError";
 
 const throwJSONParseError = (
@@ -193,6 +195,34 @@ const throwUnprocessableEntityError = (
   );
 };
 
+const throwUnauthorizedActionError = (
+  message: string,
+  errorCode?: SpentAPIExceptionCodes,
+  errors?: any,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new UnauthorizedActionError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.UNAUTHORIZED,
+    errors,
+    statusCode
+  );
+};
+
+const throwJWTokenError = (
+  message: string,
+  errors?: any,
+  errorCode?: SpentAPIExceptionCodes,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new JWTokenError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.JWT_ERROR,
+    errors,
+    statusCode
+  );
+};
+
 export {
   throwJSONParseError,
   throwInternalServerError,
@@ -201,4 +231,6 @@ export {
   throwDatabaseManipulationError,
   throwBadRequestError,
   throwUnprocessableEntityError,
+  throwUnauthorizedActionError,
+  throwJWTokenError,
 };
