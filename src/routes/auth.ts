@@ -6,10 +6,11 @@ import { auth as controller } from "../controllers";
 const authRouter = Router();
 
 authRouter.post(
-  "register-user",
+  "/register-user",
   verifyApp.handle,
-  validation.handle(register),
-  error.handle(controller.handleRegisterUser)
+  // validation.handle(register),
+  controller.handleRegisterUser
+  // error.handle(controller.handleRegisterUser)
 );
 
 authRouter.put(
