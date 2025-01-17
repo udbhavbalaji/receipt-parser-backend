@@ -1,3 +1,6 @@
+import * as jwt from "jsonwebtoken";
+import { secrets } from "src/constants";
+
 const userID = (initials: string): string => {
   const userIdLength = 18;
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -17,4 +20,10 @@ const userID = (initials: string): string => {
   return userId;
 };
 
-export default { userID };
+const JWToken = (userId: string): string => {
+  return jwt.sign({ userId }, secrets.JWT_PRIVATE_SECRET, {
+    expiresIn: secrets.JWT_EXPIRES_IN,
+  });
+};
+
+export default { userID, JWToken };
