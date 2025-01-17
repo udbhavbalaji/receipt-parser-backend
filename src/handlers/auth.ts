@@ -53,6 +53,7 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
       }
 
       req.headers.user_id = user.user_id;
+      req.headers.authorization = undefined;
       next();
     } catch (err) {
       if (
@@ -61,7 +62,7 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
       ) {
         const payload = verify.JWToken(token ?? "", true);
 
-        req.headers.user_id = payload.user_id;
+        req.headers.authorization = "redacted";
         req.headers.logout_required = "Y";
         next();
       } else {

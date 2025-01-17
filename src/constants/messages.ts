@@ -8,10 +8,13 @@ const InvalidSecretAppKeyErrorMessage = "Invalid app key";
 const InvalidCredentialsErrorMessage =
   "Invalid email and/or password. Please check your credentials and try again";
 
+const LogOutMessage = "User logged out. Delete Jwt immediately";
+
 export default {
   InvalidEmailMessage,
   PasswordTooShortMessage,
   MissingSecretAppKeyErrorMessage,
   InvalidSecretAppKeyErrorMessage,
   InvalidCredentialsErrorMessage,
+  LogOutMessage,
 };

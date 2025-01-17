@@ -31,6 +31,7 @@ enum SpentAPIExceptionCodes {
 enum HTTPStatusCodes {
   OK = 200,
   CREATED = 201,
+  NO_CONTENT = 204,
   REDIRECT_REQUIRED = 307,
   INTERNAL_SERVER_ERROR = 500,
   BAD_REQUEST = 400,
