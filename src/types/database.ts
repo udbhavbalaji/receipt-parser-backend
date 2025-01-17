@@ -8,4 +8,32 @@ interface UserDB {
   last_generated_token: string | null;
 }
 
-export { UserDB };
+interface ReceiptDB {
+  user_id: string;
+  receipt_id: string;
+  merchant_name: string;
+  merchant_address: string | null;
+  merchant_phone: string | null;
+  merchant_website: string | null;
+  receipt_no: string;
+  date: string;
+  time: string | null;
+  currency: string;
+  total: number;
+  subtotal: number;
+  tax: number | null;
+  service_charge: string | null | undefined;
+  tip: number | null | undefined;
+}
+
+interface ItemDB {
+  item_id: string;
+  receipt_id: string;
+  amount: number;
+  description: string;
+  flags?: string | null;
+  qty: number;
+  unit_price: number | null;
+}
+
+export { UserDB, ReceiptDB, ItemDB };
