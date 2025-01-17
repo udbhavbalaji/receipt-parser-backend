@@ -25,4 +25,16 @@ const getByEmail = (email: string, cols?: Array<keyof UserDB>) => {
     });
 };
 
-export default { create, getByEmail };
+const logIn = (userId: string, token: string) => {
+  return db("users")
+    .where("user_id", userId)
+    .update({
+      logged_in: "Y",
+      last_generated_token: token,
+    })
+    .catch((err) => {
+      throw throwDatabaseManipulationError(err);
+    });
+};
+
+export default { create, getByEmail, logIn };

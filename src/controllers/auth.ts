@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { user } from "../models";
-import { throwBadRequestError } from "../errors";
+import { user as User } from "../models";
+import { throwBadRequestError, throwForbiddenError } from "../errors";
 import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
-import { generate, transform } from "../utils";
+import { generate, transform, verify } from "../utils";
 import { UserDB } from "../types/database";
 import { UserRequest } from "../types/request";
+import { messages } from "src/constants";
 
 const handleRegisterUser = (
   req: Request,
@@ -13,8 +14,7 @@ const handleRegisterUser = (
 ) => {
   const validatedUserDetails = req.body.validated;
 
-  return user
-    .getByEmail(validatedUserDetails.email)
+  return User.getByEmail(validatedUserDetails.email)
     .then((user) => {
       if (user) {
         throw throwBadRequestError(
@@ -30,14 +30,78 @@ const handleRegisterUser = (
       return { ...validatedUserDetails, userId: userId };
     })
     .then(transform.camelToSnakeProperties<UserRequest, UserDB>)
-    .then(user.create)
+    .then(User.create)
     .then(() => {
-      res.sendStatus(HTTPStatusCodes.CREATED);
-      // return { status: HTTPStatusCodes.CREATED };
+      // res.sendStatus(HTTPStatusCodes.CREATED);
+      return { status: HTTPStatusCodes.CREATED };
     });
 };
 
-const handleLogin = (req: Request, res: Response, next: NextFunction) => {};
+const handleLogin = (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body.validated;
+
+  return User.getByEmail(email, [
+    "user_id",
+    "password",
+    "logged_in",
+    "last_generated_token",
+  ])
+    .then((user) => {
+      if (!user) {
+        throw throwBadRequestError(
+          messages.InvalidCredentialsErrorMessage,
+          SpentAPIExceptionCodes.NOT_FOUND
+        );
+      } else if (user.logged_in === "Y") {
+        throw throwForbiddenError(
+          "User already logged in",
+          SpentAPIExceptionCodes.USER_ALREADY_LOGGED_IN,
+          user.last_generated_token
+        );
+      }
+
+      return user;
+    })
+    .then((user) => {
+      return verify.password(password, user.password).then((verified) => {
+        if (!verified) {
+          throw throwBadRequestError(
+            messages.InvalidCredentialsErrorMessage,
+            SpentAPIExceptionCodes.INCORRECT_PASSWORD
+          );
+        }
+        return user;
+      });
+    })
+    .then((user) => {
+      const token = generate.JWToken(user.user_id);
+      return { user, token };
+    })
+    .then(({ user, token }) => {
+      return User.logIn(user.user_id, token).then(() => {
+        return token;
+      });
+    })
+    .then((token) => {
+      return { status: HTTPStatusCodes.OK, responseBody: { token: token } };
+    });
+
+  // return verify
+  //   .password(password, user.password)
+  //   .then((_) => user)
+  //   .then((user) => {
+  //     const token = generate.JWToken(user.user_id);
+  //     return { user, token };
+  //   })
+  //   .then(({ user, token }) => {
+  //     return User.logIn(user.user_id, token).then(() => {
+  //       return token;
+  //     });
+  //   })
+  //   .then((token) => {
+  //     return { status: HTTPStatusCodes.OK, responseBody: { token: token } };
+  //   });
+};
 
 const handleMe = (req: Request, res: Response, next: NextFunction) => {};
 
