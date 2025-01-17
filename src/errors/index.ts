@@ -3,6 +3,7 @@ import BadRequestError from "./BadRequestError";
 import ForbiddenError from "./ForbiddenError";
 import InternalServerError from "./InternalServerError";
 import SpentDatabaseError from "./SpentDatabaseError";
+import UnprocessableEntityError from "./UnprocessableEntityError";
 
 const throwJSONParseError = (
   message: string,
@@ -178,6 +179,20 @@ const throwBadRequestError = (
   );
 };
 
+const throwUnprocessableEntityError = (
+  message: string,
+  errors?: any,
+  errorCode?: SpentAPIExceptionCodes,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new UnprocessableEntityError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.UNPROCESSABLE_CONTENT,
+    errors,
+    statusCode
+  );
+};
+
 export {
   throwJSONParseError,
   throwInternalServerError,
@@ -185,4 +200,5 @@ export {
   throwDatabaseQueryError,
   throwDatabaseManipulationError,
   throwBadRequestError,
+  throwUnprocessableEntityError,
 };
