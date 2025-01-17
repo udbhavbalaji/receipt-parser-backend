@@ -9,8 +9,7 @@ authRouter.post(
   "/register-user",
   verifyApp.handle,
   // validation.handle(register),
-  controller.handleRegisterUser
-  // error.handle(controller.handleRegisterUser)
+  error.handle(controller.handleRegisterUser)
 );
 
 authRouter.put(
