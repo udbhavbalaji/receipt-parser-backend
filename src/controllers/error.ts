@@ -11,7 +11,7 @@ const controller = (
 ) => {
   if (err instanceof SpentAPIException) {
     res.status(err.statusCode).json({
-      message: err.message,
+      message: `${err.name}: ${err.message}`,
       errorCode: err.errorCode,
       errors: err.errors,
     });
@@ -30,7 +30,7 @@ const controller = (
       );
     }
     res.status(exception.statusCode).json({
-      message: exception.message,
+      message: `${exception.name}: ${exception.message}`,
       errorCode: exception.errorCode,
       errors: exception.errors,
     });
