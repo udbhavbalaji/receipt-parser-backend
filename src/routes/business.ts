@@ -14,6 +14,13 @@ businessRouter.post(
 );
 
 businessRouter.get(
+  "/receipt/:receipt_id",
+  verifyApp.handle,
+  auth.handle(),
+  error.handle(controller.handleGetReceipt)
+);
+
+businessRouter.get(
   "/spending-summary",
   verifyApp.handle,
   auth.handle(),
