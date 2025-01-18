@@ -2,6 +2,7 @@ import { AnyZodObject } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { throwUnprocessableEntityError } from "src/errors";
 import { SpentAPIExceptionCodes } from "src/types/enums";
+import { messages } from "src/constants";
 
 const handle = (schema: AnyZodObject) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +13,7 @@ const handle = (schema: AnyZodObject) => {
     } catch (err) {
       next(
         throwUnprocessableEntityError(
-          "Request body data is invalid. Check all fields and try again",
+          messages.error.ZodError,
           (err as any).issues,
           SpentAPIExceptionCodes.VALIDATION_ERROR
         )

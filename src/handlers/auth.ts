@@ -5,6 +5,7 @@ import { verify } from "../utils";
 import UnauthorizedActionError from "src/errors/UnauthorizedActionError";
 import { user as User } from "../models";
 import JWTokenError from "src/errors/JWTokenError";
+import { messages } from "src/constants";
 
 const handle = (ignoreTokenExpiry: boolean = false) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +14,7 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
     try {
       if (!token) {
         throw throwUnauthorizedActionError(
-          "Missing JWT",
+          messages.error.JWTMissing,
           SpentAPIExceptionCodes.MISSING_JWT_ERROR
         );
       }
@@ -22,7 +23,7 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
 
       if (!payload) {
         throw new UnauthorizedActionError(
-          "Invalid JWT",
+          messages.error.JWTInvalid,
           SpentAPIExceptionCodes.INVALID_JWT
         );
       }
@@ -35,19 +36,19 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
 
       if (!user) {
         throw throwUnauthorizedActionError(
-          "User not found",
+          messages.info.UserNotFound,
           SpentAPIExceptionCodes.NOT_FOUND
         );
       } else if (user.logged_in === "N") {
         throw throwUnauthorizedActionError(
-          "User has signed out",
+          messages.info.UserAlreadyLoggedOut,
           SpentAPIExceptionCodes.USER_SIGNED_OUT
         );
       }
 
       if (token !== user.last_generated_token) {
         throw throwUnauthorizedActionError(
-          "Updated JWT found",
+          messages.error.UpdatedJWT,
           SpentAPIExceptionCodes.JWT_EXPIRED
         );
       }

@@ -22,7 +22,7 @@ const handleRegisterUser = (
     .then((user) => {
       if (user) {
         throw throwBadRequestError(
-          "User already exists",
+          messages.info.UserAlreadyExists,
           SpentAPIExceptionCodes.ALREADY_EXISTS
         );
       }
@@ -53,12 +53,12 @@ const handleLogin = (req: Request, res: Response, next: NextFunction) => {
     .then((user) => {
       if (!user) {
         throw throwBadRequestError(
-          messages.InvalidCredentialsErrorMessage,
+          messages.info.UserNotFound,
           SpentAPIExceptionCodes.NOT_FOUND
         );
       } else if (user.logged_in === "Y") {
         throw throwForbiddenError(
-          "User already logged in",
+          messages.info.UserAlreadyLoggedIn,
           SpentAPIExceptionCodes.USER_ALREADY_LOGGED_IN,
           user.last_generated_token
         );
@@ -70,7 +70,7 @@ const handleLogin = (req: Request, res: Response, next: NextFunction) => {
       return verify.password(password, user.password).then((verified) => {
         if (!verified) {
           throw throwBadRequestError(
-            messages.InvalidCredentialsErrorMessage,
+            messages.error.InvalidCredentialsError,
             SpentAPIExceptionCodes.INCORRECT_PASSWORD
           );
         }
@@ -103,7 +103,7 @@ const handleMe = (req: Request, res: Response, next: NextFunction) => {
   ]).then((user) => {
     if (!user) {
       throw throwUnauthorizedActionError(
-        "Auth Handler didn't work properly, Jwt malformed",
+        messages.warn.AuthHandlerMalfunction,
         SpentAPIExceptionCodes.JWT_ERROR
       );
     }
@@ -117,7 +117,7 @@ const handleLogout = (req: Request, res: Response, next: NextFunction) => {
   return User.logOut(userId).then(() => {
     return {
       status: HTTPStatusCodes.OK,
-      responseBody: { message: messages.LogOutMessage },
+      responseBody: { message: messages.info.LogOut },
     };
   });
 };

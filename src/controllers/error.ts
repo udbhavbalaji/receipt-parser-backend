@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import SpentAPIException from "../errors/SpentAPIException";
 import { throwInternalServerError, throwJSONParseError } from "../errors";
 import { SpentAPIExceptionCodes } from "../types/enums";
+import { messages } from "src/constants";
 
 const controller = (
   err: SpentAPIException | Error,
@@ -18,10 +19,7 @@ const controller = (
   } else {
     let exception: SpentAPIException;
     if (err instanceof SyntaxError && "body" in err) {
-      exception = throwJSONParseError(
-        "request body has a syntax error and couldn't be processed",
-        err.stack
-      );
+      exception = throwJSONParseError(messages.error.JSONParseError, err.stack);
     } else {
       exception = throwInternalServerError(
         err.message,

@@ -1,3 +1,4 @@
+import { messages } from "src/constants";
 import { throwInternalServerError } from "src/errors";
 import { SpentAPIExceptionCodes } from "src/types/enums";
 
@@ -22,7 +23,7 @@ const camelToSnakeProperties = <
     })
     .catch((err) => {
       throw throwInternalServerError(
-        "Error transforming property styles",
+        messages.error.PropertyStyleError,
         SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR
       );
     });
@@ -49,7 +50,7 @@ const snakeToCamelProperties = <
     })
     .catch((err) => {
       throw throwInternalServerError(
-        "Error transforming property styles",
+        messages.error.PropertyStyleError,
         SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR
       );
     });

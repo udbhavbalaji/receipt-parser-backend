@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction, response } from "express";
+import { messages } from "src/constants";
 import { throwInternalServerError } from "src/errors";
 import SpentAPIException from "src/errors/SpentAPIException";
 import { HTTPStatusCodes } from "src/types/enums";
@@ -10,7 +11,7 @@ const handle = (method: Function) => {
       req.headers.authorization === "redacted"
     ) {
       res.status(HTTPStatusCodes.REDIRECT_REQUIRED).json({
-        message: "User must be logged out",
+        message: messages.info.UserLogOutInstruction,
         redirectTo: "/api/auth/logout",
         method: "PUT",
       });
@@ -38,7 +39,7 @@ const handle = (method: Function) => {
             exception = err;
           } else {
             exception = throwInternalServerError(
-              "Something went wrong :(",
+              messages.error.DefaultError,
               err.stack
             );
           }
