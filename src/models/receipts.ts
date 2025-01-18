@@ -1,5 +1,8 @@
 import db from "src/config/database";
-import { throwDatabaseManipulationError } from "src/errors";
+import {
+  throwDatabaseManipulationError,
+  throwDatabaseQueryError,
+} from "src/errors";
 import { ReceiptDB, ItemDB } from "src/types/database";
 import { ItemRequest } from "src/types/request";
 import { generate, transform } from "src/utils";
@@ -41,4 +44,23 @@ const create = (receipt: ReceiptDB, items: ItemRequest[]) => {
   });
 };
 
-export default { create };
+const get = (
+  receiptId: string,
+  userId: string,
+  cols?: Array<keyof ReceiptDB>
+) => {
+  const condition = {
+    user_id: userId,
+    receipt_id: receiptId,
+  };
+  return db
+    .select(cols ?? "*")
+    .from("receipts")
+    .where(condition)
+    .first()
+    .catch((err) => {
+      throw throwDatabaseQueryError(err);
+    });
+};
+
+export default { create, get };
