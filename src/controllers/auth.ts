@@ -100,15 +100,19 @@ const handleMe = (req: Request, res: Response, next: NextFunction) => {
     "email",
     "user_id",
     "logged_in",
-  ]).then((user) => {
-    if (!user) {
-      throw throwUnauthorizedActionError(
-        messages.warn.AuthHandlerMalfunction,
-        SpentAPIExceptionCodes.JWT_ERROR
-      );
-    }
-    return { status: HTTPStatusCodes.OK, responseBody: { user } };
-  });
+  ])
+    .then((user) => {
+      if (!user) {
+        throw throwUnauthorizedActionError(
+          messages.warn.AuthHandlerMalfunction,
+          SpentAPIExceptionCodes.JWT_ERROR
+        );
+      }
+      return transform.snakeToCamelProperties(user);
+    })
+    .then((user) => {
+      return { status: HTTPStatusCodes.OK, responseBody: { user } };
+    });
 };
 
 const handleLogout = (req: Request, res: Response, next: NextFunction) => {
