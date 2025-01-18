@@ -5,8 +5,8 @@ const registerSchema = z
   .object({
     firstName: z.string().trim(),
     lastName: z.string().trim(),
-    email: z.string().trim().email(messages.InvalidEmailMessage),
-    password: z.string().trim().min(8, messages.PasswordTooShortMessage),
+    email: z.string().trim().email(messages.error.InvalidEmail),
+    password: z.string().trim().min(8, messages.error.PasswordTooShort),
   })
   .required();
 

@@ -8,12 +8,12 @@ const handle = (req: Request, res: Response, next: NextFunction) => {
     const secretAppKey = req.headers.secret_app_key;
 
     if (!secretAppKey) {
-      throw throwForbiddenError(messages.MissingSecretAppKeyErrorMessage);
+      throw throwForbiddenError(messages.error.MissingSecretAppKeyError);
     }
 
     if (secretAppKey !== secrets.SECRET_APP_KEY) {
       throw throwForbiddenError(
-        messages.InvalidSecretAppKeyErrorMessage,
+        messages.error.InvalidSecretAppKeyError,
         SpentAPIExceptionCodes.INVALID_APP_KEY
       );
     }

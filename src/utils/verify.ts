@@ -8,7 +8,7 @@ import { JsonWebTokenError } from "jsonwebtoken";
 const password = (plain: string, hashed: string): Promise<boolean> => {
   return bcrypt.compare(plain, hashed).catch((err) => {
     throw throwBadRequestError(
-      messages.InvalidCredentialsErrorMessage,
+      messages.error.InvalidCredentialsError,
       SpentAPIExceptionCodes.INVALID_PASSWORD
     );
   });
@@ -24,20 +24,20 @@ const JWToken = (token: string, ignoreExpiry: boolean = false) => {
     if (err instanceof JsonWebTokenError) {
       if (err.message.includes("expired")) {
         throw throwJWTokenError(
-          "JWT expired",
+          messages.error.JWTExpired,
           err.stack,
           SpentAPIExceptionCodes.JWT_EXPIRED
         );
       } else if (err.message.includes("malformed")) {
         throw throwJWTokenError(
-          "JWT malformed",
+          messages.error.JWTMalformed,
           err.stack,
           SpentAPIExceptionCodes.INVALID_JWT
         );
       }
     } else {
       throw throwJWTokenError(
-        "Something went wrong while verifying JWT.",
+        messages.error.JWTError,
         (err as Error).stack,
         SpentAPIExceptionCodes.JWT_ERROR
       );
