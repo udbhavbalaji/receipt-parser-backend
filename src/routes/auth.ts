@@ -37,7 +37,7 @@ authRouter.delete(
   "/delete",
   verifyApp.handle,
   auth.handle(),
-  error.handle(controller.handleDeleteUser)
+  error.handle(controller.handleDelete)
 );
 
 export default authRouter;

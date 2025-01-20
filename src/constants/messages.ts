@@ -27,7 +27,7 @@ const UserAlreadyExists = "User already exists";
 const UserAlreadyLoggedIn = "User already logged in";
 const UserNotFound = "User not found";
 const UserAlreadyLoggedOut = "User already logged out";
-const UserLogOutInstruction = "User logged out. Delete Jwt immediately";
+const UserLogOutInstruction = "User must be logged out. Redirect immediately";
 const ReceiptNotFound = "Receipt not found";
 
 // WARN MESSAGES
@@ -69,28 +69,3 @@ const warn = {
 };
 
 export default { error, info, warn };
-
-// export {
-//   UserAlreadyLoggedIn,
-//   UserLogOutInstruction,
-//   UpdatedJWT,
-//   UserNotFound,
-//   UserAlreadyLoggedOut,
-//   JWTInvalid,
-//   JWTMissing,
-//   UserAlreadyExists,
-//   InvalidEmail,
-//   PasswordTooShort,
-//   MissingSecretAppKeyError,
-//   InvalidSecretAppKeyError,
-//   InvalidCredentialsError,
-//   LogOut,
-//   DefaultError,
-//   JSONParseError,
-//   AuthHandlerMalfunction,
-//   PropertyStyleError,
-//   ZodError,
-//   JWTError,
-//   JWTExpired,
-//   JWTMalformed,
-// };

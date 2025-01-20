@@ -9,12 +9,12 @@ interface UserRequest {
 interface ItemRequest {
   amount: number;
   description: string;
-  flags?: string | null | undefined;
+  flags?: string | null;
   qty: number;
   unitPrice: number;
 }
 
-interface ReceiptRequest {
+interface Receipt {
   merchantName: string;
   merchantAddress: string | null;
   merchantPhone: string | null;
@@ -22,7 +22,6 @@ interface ReceiptRequest {
   receiptNo: string;
   date: string;
   time: string | null;
-  items: ItemRequest[];
   currency: string;
   total: number;
   subtotal: number;
@@ -31,4 +30,8 @@ interface ReceiptRequest {
   tip?: number | null | undefined;
 }
 
-export { UserRequest, ReceiptRequest, ItemRequest };
+interface ReceiptRequest extends Receipt {
+  items: ItemRequest[];
+}
+
+export { UserRequest, ReceiptRequest, ItemRequest, Receipt };

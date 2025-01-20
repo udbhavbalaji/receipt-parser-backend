@@ -3,6 +3,7 @@ import BadRequestError from "./BadRequestError";
 import ForbiddenError from "./ForbiddenError";
 import InternalServerError from "./InternalServerError";
 import JWTokenError from "./JWTokenError";
+import PrismaError from "./PrismaError";
 import SpentDatabaseError from "./SpentDatabaseError";
 import UnauthorizedActionError from "./UnauthorizedActionError";
 import UnprocessableEntityError from "./UnprocessableEntityError";
@@ -223,6 +224,20 @@ const throwJWTokenError = (
   );
 };
 
+const throwPrismaQueryError = (
+  message: string,
+  errors?: any,
+  errorCode?: SpentAPIExceptionCodes,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new PrismaError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.GENERIC_DATABASE_ERROR,
+    errors,
+    statusCode
+  );
+};
+
 export {
   throwJSONParseError,
   throwInternalServerError,
@@ -232,5 +247,6 @@ export {
   throwBadRequestError,
   throwUnprocessableEntityError,
   throwUnauthorizedActionError,
+  throwPrismaQueryError,
   throwJWTokenError,
 };

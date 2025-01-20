@@ -1,19 +1,7 @@
-import bodyParser from "body-parser";
-import express, { Application } from "express";
-import cors from "cors";
-
+import CreateExpressApp from "./app";
 import { secrets } from "./constants";
-import apiRoutes from "./routes";
-import { error } from "./controllers";
 
-const app: Application = express();
-
-app.use(bodyParser.json());
-app.use(cors());
-
-app.use("/api", apiRoutes);
-
-app.use(error.controller);
+const app = CreateExpressApp();
 
 app.listen(secrets.PORT, () => {
   console.log(

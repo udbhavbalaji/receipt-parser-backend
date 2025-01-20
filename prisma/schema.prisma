@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int         @id @default(autoincrement())
+  userId             String      @unique
+  firstName          String
+  lastName           String
+  email              String      @unique
+  password           String
+  loggedIn           LoginStatus @default(LOGGED_OUT)
+  lastGeneratedToken String?
+  receipts           Receipt[]
+}
+
+model Receipt {
+  id              Int     @id @default(autoincrement())
+  receiptId       String  @unique
+  userId          String
+  merchantName    String
+  merchantAddress String?
+  merchantPhone   String?
+  merchantWebsite String?
+  receiptNo       String
+  date            String
+  time            String?
+  currency        String  @default("CAD")
+  total           Float
+  subtotal        Float
+  tax             Float?
+  serviceCharge   String?
+  tip             Float?
+  items           Item[]
+  user            User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model Item {
+  id          Int     @id @default(autoincrement())
+  itemId      String  @unique
+  receiptId   String
+  amount      Float
+  description String?
+  flags       String?
+  qty         Int
+  unitPrice   Float
+  receipt     Receipt @relation(fields: [receiptId], references: [receiptId], onDelete: Cascade)
+}
+
+enum LoginStatus {
+  LOGGED_IN
+  LOGGED_OUT
+}
