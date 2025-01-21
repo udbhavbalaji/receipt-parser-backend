@@ -1,5 +1,4 @@
-import register from "./registerUser";
-import login from "./loginUser";
-import receipt from "./addReceipt";
+import RegisterRequestSchema from "./register-request";
+import UserLoginSchema from "./user-login";
 
-export { register, login, receipt };
+export { RegisterRequestSchema, UserLoginSchema };

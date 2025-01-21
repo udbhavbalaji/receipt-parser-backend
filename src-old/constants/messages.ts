@@ -34,6 +34,8 @@ const ReceiptNotFound = "Receipt not found";
 const AuthHandlerMalfunction =
   "Auth Handler didn't work properly, Jwt malformed";
 
+// generate error messages for all errors in my project below
+
 const error = {
   InvalidEmail,
   PasswordTooShort,

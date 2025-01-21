@@ -1,5 +1,5 @@
-import auth from "./auth";
-import client from "./client";
-import error from "./error";
+import auth from "./auth-controller";
+import client from "./client-controller";
+import errorController from "./error-controller";
 
-export { auth, client, error };
+export { auth, client, errorController };

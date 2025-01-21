@@ -1,6 +1,11 @@
-import auth from "./auth";
-import error from "./error";
-import validation from "./validation";
-import verifyApp from "./appVerification";
+import appVerification from "./app-verification-handler";
+import validation from "./validation-handler";
+import errors from "./error-handler";
+import auth from "./auth-handler";
 
-export { auth, error, validation, verifyApp };
+export default {
+  appVerification,
+  validation,
+  errors,
+  auth,
+};

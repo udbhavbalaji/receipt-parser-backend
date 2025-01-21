@@ -1,8 +1,6 @@
 import * as jwt from "jsonwebtoken";
-
-import { secrets } from "../constants";
-import type { ItemRequest, ReceiptRequest } from "../types";
-// import { Receipt } from "@prisma/client";
+import { secrets } from "src/constants";
+import { ItemRequest, ReceiptRequest } from "src/types/request";
 
 const userID = (initials: string): string => {
   const userIdLength = 18;
@@ -44,7 +42,7 @@ const receiptID = (receipt: ReceiptRequest): string => {
 };
 
 const itemID = (item: ItemRequest, date: string, idx: number): string => {
-  let itemId: string = "";
+  let itemId: string = `IT${idx + 1}`;
 
   itemId += item.description
     .split(" ")

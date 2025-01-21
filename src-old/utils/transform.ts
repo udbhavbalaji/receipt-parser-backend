@@ -1,6 +1,6 @@
-import { messages } from "../constants";
-import InternalServerError from "../errors/internal-server-error";
-import { SpentAPIExceptionCodes } from "../types";
+import { messages } from "src/constants";
+import { throwInternalServerError } from "src/errors";
+import { SpentAPIExceptionCodes } from "src/types/enums";
 
 const camelToSnakeProperties = <
   T extends Record<string, any>,
@@ -17,15 +17,14 @@ const camelToSnakeProperties = <
           const snakeKey = changeCase.snakeCase(key, { delimiter: "_" });
           output[snakeKey] = input[key];
         }
-      }); // end forEach
+      });
 
       return output as R;
     })
     .catch((err) => {
-      throw new InternalServerError(
+      throw throwInternalServerError(
         messages.error.PropertyStyleError,
-        SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR,
-        err.stack
+        SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR
       );
     });
 };
@@ -50,10 +49,9 @@ const snakeToCamelProperties = <
       return output as R;
     })
     .catch((err) => {
-      throw new InternalServerError(
+      throw throwInternalServerError(
         messages.error.PropertyStyleError,
-        SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR,
-        err.stack
+        SpentAPIExceptionCodes.PROPERTY_TRANSFORMATION_ERROR
       );
     });
 };

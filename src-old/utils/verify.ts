@@ -1,17 +1,15 @@
-import bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { messages, secrets } from "src/constants";
+import { throwBadRequestError, throwJWTokenError } from "src/errors";
+import { SpentAPIExceptionCodes } from "src/types/enums";
 import { JsonWebTokenError } from "jsonwebtoken";
-
-import { messages, secrets } from "../constants";
-import { SpentAPIExceptionCodes } from "../types";
-import JWTokenError from "../errors/jw-token-error";
-import BadRequestError from "../errors/bad-request-error";
 
 const password = (plain: string, hashed: string): Promise<boolean> => {
   return bcrypt.compare(plain, hashed).catch((err) => {
-    throw new BadRequestError(
+    throw throwBadRequestError(
       messages.error.InvalidCredentialsError,
-      SpentAPIExceptionCodes.INCORRECT_PASSWORD
+      SpentAPIExceptionCodes.INVALID_PASSWORD
     );
   });
 };
@@ -23,27 +21,25 @@ const JWToken = (token: string, ignoreExpiry: boolean = false) => {
     }) as any;
     return payload;
   } catch (err) {
-    // todo: if jwt is expired, then we send a payload back with a retry/expired property set to true.
     if (err instanceof JsonWebTokenError) {
       if (err.message.includes("expired")) {
-        // throw new JWTokenError(
-        //   messages.error.JWTExpired,
-        //   SpentAPIExceptionCodes.JWT_EXPIRED,
-        //   err.stack
-        // );
-        return { retry: true };
+        throw throwJWTokenError(
+          messages.error.JWTExpired,
+          err.stack,
+          SpentAPIExceptionCodes.JWT_EXPIRED
+        );
       } else if (err.message.includes("malformed")) {
-        throw new JWTokenError(
+        throw throwJWTokenError(
           messages.error.JWTMalformed,
-          SpentAPIExceptionCodes.INVALID_JWT,
-          err.stack
+          err.stack,
+          SpentAPIExceptionCodes.INVALID_JWT
         );
       }
     } else {
-      throw new JWTokenError(
+      throw throwJWTokenError(
         messages.error.JWTError,
-        SpentAPIExceptionCodes.JWT_ERROR,
-        (err as Error).stack
+        (err as Error).stack,
+        SpentAPIExceptionCodes.JWT_ERROR
       );
     }
   }
