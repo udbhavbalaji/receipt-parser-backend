@@ -4,7 +4,14 @@ import { throwInternalServerError, throwJSONParseError } from "../errors";
 import { SpentAPIExceptionCodes } from "../types/enums";
 import { messages } from "src/constants";
 
-const controller = (
+export type SpentErrorController = (
+  err: SpentAPIException | Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => void;
+
+const controller: SpentErrorController = (
   err: SpentAPIException | Error,
   req: Request,
   res: Response,

@@ -26,8 +26,8 @@ interface Receipt {
   total: number;
   subtotal: number;
   tax: number | null;
-  serviceCharge?: string | null | undefined;
-  tip?: number | null | undefined;
+  serviceCharge: string | null;
+  tip: number | null;
 }
 
 interface ReceiptRequest extends Receipt {

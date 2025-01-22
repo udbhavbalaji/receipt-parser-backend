@@ -1,16 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import { throwUnauthorizedActionError } from "src/errors";
-import { SpentAPIExceptionCodes } from "src/types/enums";
-import { verify } from "../utils";
-import UnauthorizedActionError from "src/errors/UnauthorizedActionError";
-import { user as User } from "../models";
-import JWTokenError from "src/errors/JWTokenError";
-import { messages } from "src/constants";
-import db from "src/config/prisma/database";
-import { LoginStatus } from "@prisma/client";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 
-const handle = (ignoreTokenExpiry: boolean = false) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+import { throwUnauthorizedActionError } from "../errors";
+import { SpentAPIExceptionCodes } from "../types";
+import { verify } from "../utils";
+import JWTokenError from "../errors/JWTokenError";
+import { messages } from "../constants";
+import db, { LoginStatus } from "../prisma";
+
+const handle: AuthHandler =
+  (ignoreTokenExpiry: boolean = false): RequestHandler =>
+  async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
 
     try {
@@ -24,18 +23,13 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
       const payload = verify.JWToken(token, ignoreTokenExpiry);
 
       if (!payload) {
-        throw new UnauthorizedActionError(
+        throw throwUnauthorizedActionError(
           messages.error.JWTInvalid,
           SpentAPIExceptionCodes.INVALID_JWT
         );
       }
 
-      // const user = await User.getByID(payload.userId, [
-      //   "user_id",
-      //   "logged_in",
-      //   "last_generated_token",
-      // ]);
-      const user = await db.user.findFirst({
+      const user = await db.user.findFirstOrThrow({
         select: {
           userId: true,
           loggedIn: true,
@@ -46,12 +40,7 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
         },
       });
 
-      if (!user) {
-        throw throwUnauthorizedActionError(
-          messages.info.UserNotFound,
-          SpentAPIExceptionCodes.NOT_FOUND
-        );
-      } else if (user.loggedIn === LoginStatus.LOGGED_OUT) {
+      if (user.loggedIn === LoginStatus.LOGGED_OUT) {
         throw throwUnauthorizedActionError(
           messages.info.UserAlreadyLoggedOut,
           SpentAPIExceptionCodes.USER_SIGNED_OUT
@@ -65,24 +54,24 @@ const handle = (ignoreTokenExpiry: boolean = false) => {
         );
       }
 
-      req.headers.user_id = user.userId;
+      if (payload.expired) {
+        req.headers.logout_required = "Y";
+      }
+
       req.headers.authorization = undefined;
+      req.headers.user_id = user.userId;
       next();
     } catch (err) {
       if (
         err instanceof JWTokenError &&
         err.errorCode === SpentAPIExceptionCodes.JWT_EXPIRED
       ) {
-        const payload = verify.JWToken(token ?? "", true);
-
-        req.headers.authorization = "redacted";
-        req.headers.logout_required = "Y";
-        next();
-      } else {
-        next(err);
+        console.log("still throwing expired error for some reason");
       }
+      next(err);
     }
   };
-};
+
+export type AuthHandler = (ignoreTokenExpiry?: boolean) => RequestHandler;
 
 export default { handle };

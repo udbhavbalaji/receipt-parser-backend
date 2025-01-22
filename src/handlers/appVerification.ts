@@ -1,9 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { throwForbiddenError } from "../errors";
 import { secrets, messages } from "src/constants";
 import { SpentAPIExceptionCodes } from "src/types/enums";
 
-const handle = (req: Request, res: Response, next: NextFunction) => {
+const handle: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const secretAppKey = req.headers.secret_app_key;
 
