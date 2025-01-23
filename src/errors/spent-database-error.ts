@@ -1,7 +1,7 @@
-import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
-import SpentAPIException from "./SpentAPIException";
+import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types";
+import SpentAPIException from "./spent-api-exception";
 
-class PrismaError extends SpentAPIException {
+class SpentDatabaseError extends SpentAPIException {
   constructor(
     message: string,
     errorCode: SpentAPIExceptionCodes,
@@ -13,9 +13,9 @@ class PrismaError extends SpentAPIException {
       errorCode,
       statusCode ?? HTTPStatusCodes.INTERNAL_SERVER_ERROR,
       errors,
-      "PrismaError"
+      "SpentDatabaseError"
     );
   }
 }
 
-export default PrismaError;
+export default SpentDatabaseError;

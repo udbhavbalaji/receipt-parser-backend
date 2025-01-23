@@ -1,4 +1,4 @@
-import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
+import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types";
 
 class SpentAPIException extends Error {
   message: string;

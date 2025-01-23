@@ -1,5 +1,5 @@
-import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
-import SpentAPIException from "./SpentAPIException";
+import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types";
+import SpentAPIException from "./spent-api-exception";
 
 class ForbiddenError extends SpentAPIException {
   constructor(
