@@ -1,11 +1,3 @@
-interface UserRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  userId: string;
-}
-
 interface ItemRequest {
   amount: number;
   description: string;
@@ -14,7 +6,7 @@ interface ItemRequest {
   unitPrice: number;
 }
 
-interface Receipt {
+interface ReceiptRequest {
   merchantName: string;
   merchantAddress: string | null;
   merchantPhone: string | null;
@@ -22,6 +14,7 @@ interface Receipt {
   receiptNo: string;
   date: string;
   time: string | null;
+  items: ItemRequest[];
   currency: string;
   total: number;
   subtotal: number;
@@ -30,8 +23,4 @@ interface Receipt {
   tip: number | null;
 }
 
-interface ReceiptRequest extends Receipt {
-  items: ItemRequest[];
-}
-
-export { UserRequest, ReceiptRequest, ItemRequest, Receipt };
+export { ReceiptRequest, ItemRequest };
