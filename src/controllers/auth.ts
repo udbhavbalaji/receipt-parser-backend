@@ -1,26 +1,27 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
+
 import {
   throwBadRequestError,
   throwForbiddenError,
   throwUnauthorizedActionError,
 } from "../errors";
-import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
 import { generate, verify } from "../utils";
-import { messages } from "src/constants";
-import db from "../prisma";
-import { LoginStatus } from "@prisma/client";
-
-export type SpentController = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<{ status: HTTPStatusCodes; responseBody?: Record<string, any> }>;
+import { messages } from "../constants";
+import db, { PublicUser, LoginStatus } from "../prisma";
+import {
+  SpentAPINullResponse,
+  SpentAPIObjectResponse,
+  SpentAPIStringResponse,
+  HTTPStatusCodes,
+  SpentAPIExceptionCodes,
+} from "../types";
+import { SpentController } from ".";
 
 const handleRegister: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIStringResponse> => {
   const validatedUserDetails = req.body.validated;
 
   const userExists = await db.user.exists({
@@ -42,14 +43,20 @@ const handleRegister: SpentController = async (
 
   await db.user.create({ data: { ...user } });
 
-  return { status: HTTPStatusCodes.OK };
+  const response: SpentAPIStringResponse = {
+    status: HTTPStatusCodes.CREATED,
+    type: "string",
+    body: "Created",
+  };
+
+  return response;
 };
 
 const handleLogin: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIObjectResponse<{ token: string }>> => {
   const { email, password } = req.body.validated;
 
   const user = await db.user.loginCheck(email);
@@ -75,17 +82,22 @@ const handleLogin: SpentController = async (
 
   await db.user.logIn(user.userId, token);
 
-  return { status: HTTPStatusCodes.OK, responseBody: { token: token } };
+  const response: SpentAPIObjectResponse<{ token: string }> = {
+    status: HTTPStatusCodes.OK,
+    type: "object",
+    body: { token: token },
+  };
+
+  return response;
 };
 
 const handleMe: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIObjectResponse<{ user: PublicUser }>> => {
   const userId = req.headers.user_id as string;
 
-  // const user = await db.user.getMe(userId);
   const user = await db.user.findFirstOrThrow({
     omit: {
       password: true,
@@ -97,34 +109,49 @@ const handleMe: SpentController = async (
     },
   });
 
-  return { status: HTTPStatusCodes.OK, responseBody: { user } };
+  const response: SpentAPIObjectResponse<{ user: PublicUser }> = {
+    status: HTTPStatusCodes.OK,
+    type: "object",
+    body: { user },
+  };
+
+  return response;
 };
 
 const handleLogout: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIStringResponse> => {
   const userId = req.headers.user_id as string;
 
   await db.user.logOut(userId);
 
-  return {
+  const response: SpentAPIStringResponse = {
     status: HTTPStatusCodes.OK,
-    responseBody: { message: messages.info.LogOut },
+    type: "string",
+    body: messages.info.LogOut,
   };
+
+  return response;
 };
 
 const handleDelete: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPINullResponse> => {
   const userId = req.headers.user_id as string;
 
   await db.user.delete({ where: { userId: userId } });
 
-  return { status: HTTPStatusCodes.NO_CONTENT };
+  const response: SpentAPINullResponse = {
+    status: HTTPStatusCodes.NO_CONTENT,
+    type: "null",
+    body: null,
+  };
+
+  return response;
 };
 
 export default {

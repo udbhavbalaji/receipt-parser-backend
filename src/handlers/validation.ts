@@ -1,8 +1,9 @@
 import { AnyZodObject } from "zod";
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { throwUnprocessableEntityError } from "src/errors";
-import { SpentAPIExceptionCodes } from "src/types/enums";
-import { messages } from "src/constants";
+
+import { throwUnprocessableEntityError } from "../errors";
+import { SpentAPIExceptionCodes } from "../types/enums";
+import { messages } from "../constants";
 
 const handle: ValidationHandler =
   (schema: AnyZodObject): RequestHandler =>

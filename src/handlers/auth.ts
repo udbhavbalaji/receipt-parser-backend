@@ -3,13 +3,14 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import { throwUnauthorizedActionError } from "../errors";
 import { SpentAPIExceptionCodes } from "../types";
 import { verify } from "../utils";
-import JWTokenError from "../errors/JWTokenError";
+import JWTokenError from "../errors/jwtoken-error";
 import { messages } from "../constants";
 import db, { LoginStatus } from "../prisma";
+import { AuthHandler } from ".";
 
 const handle: AuthHandler =
   (ignoreTokenExpiry: boolean = false): RequestHandler =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.headers.authorization;
 
     try {
@@ -71,7 +72,5 @@ const handle: AuthHandler =
       next(err);
     }
   };
-
-export type AuthHandler = (ignoreTokenExpiry?: boolean) => RequestHandler;
 
 export default { handle };

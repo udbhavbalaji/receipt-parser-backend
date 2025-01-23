@@ -6,11 +6,11 @@ import {
   Receipt,
   User,
 } from "@prisma/client";
-import { Return } from "@prisma/client/runtime/library";
-import { messages } from "src/constants";
-import { throwBadRequestError } from "src/errors";
-import { ItemRequest, SpentAPIExceptionCodes } from "src/types";
-import { generate } from "src/utils";
+
+import { messages } from "../constants";
+import { throwBadRequestError } from "../errors";
+import { ItemRequest, SpentAPIExceptionCodes } from "../types";
+import { generate } from "../utils";
 
 const initDB = () => {
   const db = new PrismaClient().$extends({
@@ -105,21 +105,6 @@ const initDB = () => {
             },
           });
         },
-
-        // async getMe(userId: string): Promise<User> {
-        //   const context = Prisma.getExtensionContext(this);
-
-        //   return await (context as any).findFirstOrThrow({
-        //     omit: {
-        //       password: true,
-        //       lastGeneratedToken: true,
-        //       id: true,
-        //     },
-        //     where: {
-        //       userId,
-        //     },
-        //   });
-        // },
       },
       receipt: {
         add: async (
@@ -138,17 +123,6 @@ const initDB = () => {
             await trx.item.createMany({ data: itemsDB });
           });
         },
-
-        // async get(receiptId: string, userId: string): Promise<Receipt> {
-        //   const context = Prisma.getExtensionContext(this);
-
-        //   return (context as any).findFirstOrThrow({
-        //     where: {
-        //       receiptId,
-        //       userId,
-        //     },
-        //   });
-        // },
       },
     },
   });

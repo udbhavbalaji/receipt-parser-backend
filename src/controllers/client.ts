@@ -1,15 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import { ReceiptRequest } from "src/types/request";
-import { generate } from "src/utils";
-import { HTTPStatusCodes } from "src/types/enums";
-import db from "../prisma";
-import { SpentController } from "./auth";
+
+import { generate } from "../utils";
+import db, { Receipt } from "../prisma";
+import { SpentController } from ".";
+import {
+  SpentAPINullResponse,
+  SpentAPIObjectResponse,
+  SpentAPIStringResponse,
+  HTTPStatusCodes,
+  ReceiptRequest,
+} from "../types";
 
 const handleAddReceipt: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIStringResponse> => {
   const receipt = req.body.validated as ReceiptRequest;
   const userId = req.headers.user_id as string;
 
@@ -21,14 +27,20 @@ const handleAddReceipt: SpentController = async (
 
   await db.receipt.add(processedReceipt, items);
 
-  return { status: HTTPStatusCodes.CREATED };
+  const response: SpentAPIStringResponse = {
+    status: HTTPStatusCodes.CREATED,
+    type: "string",
+    body: "Created",
+  };
+
+  return response;
 };
 
 const handleGetReceipt: SpentController = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<SpentAPIObjectResponse<Receipt>> => {
   const receiptId = req.params.receipt_id as string;
   const userId = req.headers.user_id as string;
 
@@ -39,15 +51,27 @@ const handleGetReceipt: SpentController = async (
     },
   });
 
-  return { status: HTTPStatusCodes.OK, responseBody: { ...receipt } };
+  const response: SpentAPIObjectResponse<Receipt> = {
+    status: HTTPStatusCodes.OK,
+    type: "object",
+    body: { ...receipt },
+  };
+
+  return response;
 };
 
 const handleSpendingSummary: SpentController = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  return Promise.resolve({ status: HTTPStatusCodes.NOT_IMPLEMENTED });
+): Promise<SpentAPINullResponse> => {
+  const response: SpentAPINullResponse = {
+    status: HTTPStatusCodes.NOT_IMPLEMENTED,
+    type: "null",
+    body: null,
+  };
+
+  return Promise.resolve(response);
 };
 
 export default { handleAddReceipt, handleSpendingSummary, handleGetReceipt };

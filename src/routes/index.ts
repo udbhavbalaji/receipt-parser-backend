@@ -1,7 +1,7 @@
 import { Router } from "express";
 import authRouter from "./auth";
 import clientRouter from "./business";
-import appVerification from "src/handlers/appVerification";
+import appVerification from "src/handlers/app-verification";
 
 const rootRouter = Router();
 

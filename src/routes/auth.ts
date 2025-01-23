@@ -7,14 +7,14 @@ const authRouter = Router();
 
 authRouter.post(
   "/register",
-  verifyApp.handle,
+  // verifyApp.handle,
   validation.handle(register),
   error.handle(controller.handleRegister)
 );
 
 authRouter.put(
   "/login",
-  verifyApp.handle,
+  // verifyApp.handle,
   validation.handle(login),
   error.handle(controller.handleLogin)
 );
