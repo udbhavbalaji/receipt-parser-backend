@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import auth from "./auth";
 import client from "./client";
 import error from "./error";
+import expense from "./expense";
 import { SpentAPISuccessResponse } from "../types";
 
 export type SpentController = (
@@ -11,4 +12,4 @@ export type SpentController = (
   next: NextFunction
 ) => Promise<SpentAPISuccessResponse>;
 
-export { auth, client, error };
+export { auth, client, error, expense };
