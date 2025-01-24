@@ -1,6 +1,6 @@
 import CreateExpressApp from "./app";
 import { secrets } from "./constants";
-
+import db from "./prisma";
 const app = CreateExpressApp();
 
 app.listen(secrets.PORT, () => {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import auth from "./auth";
-import client from "./client";
+import client from "./receipt";
 import error from "./error";
 import expense from "./expense";
 import { SpentAPISuccessResponse } from "../types";

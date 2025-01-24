@@ -1,5 +1,5 @@
-import register from "./register-user";
-import login from "./login-user";
-import receipt from "./add-receipt";
+import receipt from "./receipt";
+import expense from "./expense";
+import auth from "./auth";
 
-export { register, login, receipt };
+export { auth, receipt, expense };

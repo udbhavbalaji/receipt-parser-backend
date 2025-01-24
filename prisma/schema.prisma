@@ -65,7 +65,6 @@
 //   LOGGED_OUT
 // }
 
-
 // /////////////////////////////////////////// fixme: remove this if not doing the expenses part
 
 // model Expense {
@@ -109,10 +108,7 @@
 //   merchants   Merchant[]    
 // }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
@@ -130,24 +126,24 @@ datasource db {
 }
 
 model User {
-  id                 Int         @id @default(autoincrement())
-  userId             String      @unique
+  id                 Int           @id @default(autoincrement())
+  userId             String        @unique
   firstName          String
   lastName           String
-  email              String      @unique
+  email              String        @unique
   password           String
-  loggedIn           LoginStatus @default(LOGGED_OUT)
+  loggedIn           LoginStatus   @default(LOGGED_OUT)
   lastGeneratedToken String?
   receipts           Receipt[]
-  expenses      Expense[]  ////////////// fixme: remove this if not doing the expenses part
-  merchants     Merchant[]
-  categories        Category[]
-  subCategories     SubCategory[]
+  expenses           Expense[] ////////////// fixme: remove this if not doing the expenses part
+  merchants          Merchant[]
+  categories         Category[]
+  subCategories      SubCategory[]
 }
 
 model Receipt {
-  id              Int     @id @default(autoincrement())
-  receiptId       String  @unique
+  id              Int       @id @default(autoincrement())
+  receiptId       String    @unique
   userId          String
   merchantName    String
   merchantAddress String?
@@ -156,15 +152,15 @@ model Receipt {
   receiptNo       String
   date            String
   time            String?
-  currency        String  @default("CAD")
+  currency        String    @default("CAD")
   total           Float
   subtotal        Float
   tax             Float?
   serviceCharge   String?
   tip             Float?
   items           Item[]
-  user            User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  expenses      Expense[] ////////////// fixme: remove this if not doing the expenses part
+  user            User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  expenses        Expense[] ////////////// fixme: remove this if not doing the expenses part
 }
 
 model Item {
@@ -184,57 +180,54 @@ enum LoginStatus {
   LOGGED_OUT
 }
 
-
 /////////////////////////////////////////// fixme: remove this if not doing the expenses part
 
 model Expense {
-  id    Int     @id @default(autoincrement())
-  userId    String
-  receiptId   String  @unique
+  id              Int         @id @default(autoincrement())
+  userId          String
+  receiptId       String      @unique
   categoryName    String
-  subCategoryName   String
+  subCategoryName String
   merchantName    String
-  date    String
-  currency    String  @default("CAD")
-  total   Float
-  category    Category    @relation(fields: [categoryName], references: [name])
-  subCategory   SubCategory   @relation(fields: [subCategoryName], references: [name])
-  user    User  @relation(fields: [userId], references: [userId])
-  receipt   Receipt   @relation(fields: [receiptId], references: [receiptId])
-  merchant    Merchant    @relation(fields: [merchantName], references: [name])
+  date            String
+  currency        String      @default("CAD")
+  total           Float
+  category        Category    @relation(fields: [categoryName], references: [name], onDelete: Cascade)
+  subCategory     SubCategory @relation(fields: [subCategoryName], references: [name], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  receipt         Receipt     @relation(fields: [receiptId], references: [receiptId], onDelete: Cascade)
+  merchant        Merchant    @relation(fields: [merchantName], references: [name], onDelete: Cascade)
 }
 
 model Merchant {
-  name    String  @id
-  userId    String     
+  name            String @id
+  userId          String
   categoryName    String
-  subCategoryName   String
+  subCategoryName String
 
-  category    Category    @relation(fields: [categoryName], references: [name])
-  subCategory   SubCategory   @relation(fields: [subCategoryName], references: [name])
-  expenses      Expense[]
-  user          User        @relation(fields: [userId], references: [userId])
+  category    Category    @relation(fields: [categoryName], references: [name], onDelete: Cascade)
+  subCategory SubCategory @relation(fields: [subCategoryName], references: [name], onDelete: Cascade)
+  expenses    Expense[]
+  user        User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model Category {
-  name    String   @id 
-  userId        String 
+  name   String @id
+  userId String
 
-  user      User    @relation(fields: [userId], references: [userId])
-  expenses    Expense[]   
-  subCategories   SubCategory[]
+  user          User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  expenses      Expense[]
+  subCategories SubCategory[]
   merchants     Merchant[]
 }
 
 model SubCategory {
-  name    String    @id 
-  categoryName    String
-  userId        String
+  name         String @id
+  categoryName String
+  userId       String
 
-  expenses    Expense[]
-  category    Category  @relation(fields: [categoryName], references: [name])
-  merchants   Merchant[]    
-  user      User    @relation(fields: [userId], references: [userId])
+  expenses  Expense[]
+  category  Category   @relation(fields: [categoryName], references: [name], onDelete: Cascade)
+  merchants Merchant[]
+  user      User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
-
-
