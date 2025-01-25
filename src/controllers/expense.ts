@@ -6,13 +6,13 @@ import {
   User,
 } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import db from "src/prisma";
+import db from "../prisma";
 import {
   HTTPStatusCodes,
   SpentAPIArrayResponse,
   SpentAPIObjectResponse,
   SpentAPIStringResponse,
-} from "src/types";
+} from "../types";
 
 type ExpenseModelTypes = "category" | "subCategory" | "merchant";
 

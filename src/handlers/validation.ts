@@ -9,7 +9,6 @@ const handle: ValidationHandler =
   (schema: AnyZodObject): RequestHandler =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body);
       const validatedBody = schema.parse(req.body);
       req.body.validated = validatedBody;
       next();

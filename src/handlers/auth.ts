@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 
-import { throwUnauthorizedActionError } from "../errors";
+import SpentAPIException, { throwUnauthorizedActionError } from "../errors";
 import { SpentAPIExceptionCodes } from "../types";
 import { verify } from "../utils";
 import JWTokenError from "../errors/jwtoken-error";
@@ -9,7 +9,10 @@ import db, { LoginStatus } from "../prisma";
 import { AuthHandler } from ".";
 
 const handle: AuthHandler =
-  (ignoreTokenExpiry: boolean = false): RequestHandler =>
+  (
+    ignoreTokenExpiry: boolean = false,
+    inTestMode: boolean = false
+  ): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.headers.authorization;
 
@@ -41,6 +44,13 @@ const handle: AuthHandler =
         },
       });
 
+      // if (!user) {
+      //   throw throwUnauthorizedActionError(
+      //     messages.error.InvalidCredentialsError,
+      //     SpentAPIExceptionCodes.NOT_FOUND
+      //   );
+      // }
+
       if (user.loggedIn === LoginStatus.LOGGED_OUT) {
         throw throwUnauthorizedActionError(
           messages.info.UserAlreadyLoggedOut,
@@ -68,6 +78,9 @@ const handle: AuthHandler =
         err.errorCode === SpentAPIExceptionCodes.JWT_EXPIRED
       ) {
         console.log("still throwing expired error for some reason");
+      }
+      if (inTestMode) {
+        req.headers.err_name = (err as SpentAPIException).name;
       }
       next(err);
     }

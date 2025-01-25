@@ -8,7 +8,7 @@ import {
 } from "@prisma/client";
 
 import { messages } from "../constants";
-import { throwBadRequestError } from "../errors";
+import { throwBadRequestError, throwUnauthorizedActionError } from "../errors";
 import { ItemRequest, SpentAPIExceptionCodes } from "../types";
 import { generate } from "../utils";
 
@@ -32,8 +32,9 @@ const initDB = () => {
             err.code === "P2025"
           ) {
             if (err.meta?.modelName === "User") {
-              throw throwBadRequestError(
-                messages.info.UserNotFound,
+              throw throwUnauthorizedActionError(
+                // messages.info.UserNotFound,
+                messages.error.InvalidCredentialsError,
                 SpentAPIExceptionCodes.NOT_FOUND,
                 err.stack
               );

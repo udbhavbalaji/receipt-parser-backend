@@ -13,7 +13,10 @@ const handle: RequestHandler = (
     const secretAppKey = req.headers.secret_app_key;
 
     if (!secretAppKey) {
-      throw throwForbiddenError(messages.error.MissingSecretAppKeyError);
+      throw throwForbiddenError(
+        messages.error.MissingSecretAppKeyError,
+        SpentAPIExceptionCodes.UNVERIFIED_APP
+      );
     }
 
     if (secretAppKey !== secrets.SECRET_APP_KEY) {
