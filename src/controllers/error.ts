@@ -1,21 +1,34 @@
 import { Request, Response, NextFunction } from "express";
-import SpentAPIException from "../errors/SpentAPIException";
-import { throwInternalServerError, throwJSONParseError } from "../errors";
-import { SpentAPIExceptionCodes } from "../types/enums";
-import { messages } from "src/constants";
 
-const controller = (
+import SpentAPIException, {
+  throwInternalServerError,
+  throwJSONParseError,
+} from "../errors";
+import { messages } from "../constants";
+import { SpentAPIErrorResponse, SpentAPIExceptionCodes } from "../types";
+
+export type SpentErrorController = (
+  err: SpentAPIException | Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => void;
+
+const controller: SpentErrorController = (
   err: SpentAPIException | Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  let response: SpentAPIErrorResponse;
   if (err instanceof SpentAPIException) {
-    res.status(err.statusCode).json({
+    response = {
+      status: err.statusCode,
+      type: "error",
       message: `${err.name}: ${err.message}`,
       errorCode: err.errorCode,
       errors: err.errors,
-    });
+    };
   } else {
     let exception: SpentAPIException;
     if (err instanceof SyntaxError && "body" in err) {
@@ -27,12 +40,15 @@ const controller = (
         SpentAPIExceptionCodes.INTERNAL_SERVER_ERROR
       );
     }
-    res.status(exception.statusCode).json({
+    response = {
+      status: exception.statusCode,
+      type: "error",
       message: `${exception.name}: ${exception.message}`,
       errorCode: exception.errorCode,
       errors: exception.errors,
-    });
+    };
   }
+  res.status(response.status).json(response);
 };
 
 export default { controller };

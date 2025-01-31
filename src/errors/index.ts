@@ -1,11 +1,13 @@
-import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types/enums";
-import BadRequestError from "./BadRequestError";
-import ForbiddenError from "./ForbiddenError";
-import InternalServerError from "./InternalServerError";
-import JWTokenError from "./JWTokenError";
-import SpentDatabaseError from "./SpentDatabaseError";
-import UnauthorizedActionError from "./UnauthorizedActionError";
-import UnprocessableEntityError from "./UnprocessableEntityError";
+import { HTTPStatusCodes, SpentAPIExceptionCodes } from "../types";
+import BadRequestError from "./bad-request-error";
+import ForbiddenError from "./forbidden-error";
+import InternalServerError from "./internal-server-error";
+import JWTokenError from "./jwtoken-error";
+import PrismaError from "./prisma-error";
+import SpentDatabaseError from "./spent-database-error";
+import UnauthorizedActionError from "./unauthorized-action-error";
+import UnprocessableEntityError from "./unprocessable-entity-error";
+import SpentAPIException from "./spent-api-exception";
 
 const throwJSONParseError = (
   message: string,
@@ -223,6 +225,20 @@ const throwJWTokenError = (
   );
 };
 
+const throwPrismaQueryError = (
+  message: string,
+  errors?: any,
+  errorCode?: SpentAPIExceptionCodes,
+  statusCode?: HTTPStatusCodes
+) => {
+  return new PrismaError(
+    message,
+    errorCode ?? SpentAPIExceptionCodes.GENERIC_DATABASE_ERROR,
+    errors,
+    statusCode
+  );
+};
+
 export {
   throwJSONParseError,
   throwInternalServerError,
@@ -232,5 +248,7 @@ export {
   throwBadRequestError,
   throwUnprocessableEntityError,
   throwUnauthorizedActionError,
+  throwPrismaQueryError,
   throwJWTokenError,
+  SpentAPIException as default,
 };

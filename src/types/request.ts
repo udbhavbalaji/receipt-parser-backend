@@ -1,15 +1,7 @@
-interface UserRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  userId: string;
-}
-
 interface ItemRequest {
   amount: number;
   description: string;
-  flags?: string | null | undefined;
+  flags?: string | null;
   qty: number;
   unitPrice: number;
 }
@@ -27,8 +19,8 @@ interface ReceiptRequest {
   total: number;
   subtotal: number;
   tax: number | null;
-  serviceCharge?: string | null | undefined;
-  tip?: number | null | undefined;
+  serviceCharge: string | null;
+  tip: number | null;
 }
 
-export { UserRequest, ReceiptRequest, ItemRequest };
+export { ReceiptRequest, ItemRequest };

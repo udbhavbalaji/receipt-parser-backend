@@ -1,52 +1,63 @@
-import { Request, Response, NextFunction, response } from "express";
-import { messages } from "src/constants";
-import { throwInternalServerError } from "src/errors";
-import SpentAPIException from "src/errors/SpentAPIException";
-import { HTTPStatusCodes } from "src/types/enums";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 
-const handle = (method: Function) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (
-      req.headers.logout_required === "Y" &&
-      req.headers.authorization === "redacted"
-    ) {
-      res.status(HTTPStatusCodes.REDIRECT_REQUIRED).json({
-        message: messages.info.UserLogOutInstruction,
-        redirectTo: "/api/auth/logout",
-        method: "PUT",
-      });
-    } else {
-      Promise.resolve(method(req, res, next))
-        .then(
-          ({
-            status,
-            responseBody,
-          }: {
-            status: HTTPStatusCodes;
-            responseBody?: Record<string, any>;
-          }) => {
-            if (responseBody) {
-              res.status(status).json(responseBody);
-            } else {
-              res.sendStatus(status);
-            }
-          }
-        )
-        .catch((err) => {
-          let exception: SpentAPIException;
+import { messages } from "../constants";
+import SpentAPIException, { throwInternalServerError } from "../errors";
+import db from "../prisma";
+import {
+  SpentAPIExceptionCodes,
+  HTTPStatusCodes,
+  SpentAPIErrorResponse,
+  SpentAPISuccessResponse,
+} from "../types";
+import { SpentController } from "../controllers";
+import { ErrorHandler } from ".";
 
-          if (err instanceof SpentAPIException) {
-            exception = err;
-          } else {
-            exception = throwInternalServerError(
-              messages.error.DefaultError,
-              err.stack
-            );
-          }
-          next(exception);
-        });
+const handle: ErrorHandler =
+  (method: SpentController): RequestHandler =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (req.headers.logout_required === "Y") {
+        await db.user.logOut(req.headers.user_id as string);
+        const response: SpentAPIErrorResponse = {
+          status: HTTPStatusCodes.UNAUTHORIZED,
+          type: "error",
+          message: "User logged out due to expired jwt",
+          errorCode: SpentAPIExceptionCodes.JWT_EXPIRED,
+          errors: null,
+        };
+        res.status(response.status).json(response);
+      } else {
+        // const {
+        //   status,
+        //   responseBody,
+        // }: { status: HTTPStatusCodes; responseBody?: Record<string, any> } =
+        //   await method(req, res, next);
+
+        const response: SpentAPISuccessResponse = await method(req, res, next);
+
+        // if (responseBody) {
+        //   res.status(status).json(responseBody);
+        // } else {
+        //   res.sendStatus(status);
+        // }
+
+        res.status(response.status).json(response);
+      }
+    } catch (err: any) {
+      let exception: SpentAPIException;
+
+      if (err instanceof SpentAPIException) {
+        exception = err;
+      } else {
+        exception = throwInternalServerError(
+          messages.error.DefaultError,
+          err.stack
+        );
+      }
+      next(exception);
     }
   };
-};
+
+// export type ErrorHandler = (method: SpentController) => RequestHandler;
 
 export default { handle };

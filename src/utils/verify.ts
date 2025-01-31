@@ -1,9 +1,9 @@
-import * as jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { messages, secrets } from "src/constants";
-import { throwBadRequestError, throwJWTokenError } from "src/errors";
-import { SpentAPIExceptionCodes } from "src/types/enums";
-import { JsonWebTokenError } from "jsonwebtoken";
+
+import { messages, secrets } from "../constants";
+import { throwBadRequestError, throwJWTokenError } from "../errors";
+import { SpentAPIExceptionCodes } from "../types";
 
 const password = (plain: string, hashed: string): Promise<boolean> => {
   return bcrypt.compare(plain, hashed).catch((err) => {
@@ -19,15 +19,15 @@ const JWToken = (token: string, ignoreExpiry: boolean = false) => {
     const payload = jwt.verify(token, secrets.JWT_PRIVATE_SECRET, {
       ignoreExpiration: ignoreExpiry,
     }) as any;
-    return payload;
+
+    return { ...payload, expired: false };
   } catch (err) {
     if (err instanceof JsonWebTokenError) {
       if (err.message.includes("expired")) {
-        throw throwJWTokenError(
-          messages.error.JWTExpired,
-          err.stack,
-          SpentAPIExceptionCodes.JWT_EXPIRED
-        );
+        const expiredPayload = jwt.verify(token, secrets.JWT_PRIVATE_SECRET, {
+          ignoreExpiration: true,
+        }) as any;
+        return { ...expiredPayload, expired: true };
       } else if (err.message.includes("malformed")) {
         throw throwJWTokenError(
           messages.error.JWTMalformed,

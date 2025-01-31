@@ -1,12 +1,15 @@
 import { AnyZodObject } from "zod";
-import { Request, Response, NextFunction } from "express";
-import { throwUnprocessableEntityError } from "src/errors";
-import { SpentAPIExceptionCodes } from "src/types/enums";
-import { messages } from "src/constants";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 
-const handle = (schema: AnyZodObject) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+import { throwUnprocessableEntityError } from "../errors";
+import { SpentAPIExceptionCodes } from "../types/enums";
+import { messages } from "../constants";
+
+const handle: ValidationHandler =
+  (schema: AnyZodObject): RequestHandler =>
+  (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.body);
       const validatedBody = schema.parse(req.body);
       req.body.validated = validatedBody;
       next();
@@ -20,6 +23,7 @@ const handle = (schema: AnyZodObject) => {
       );
     }
   };
-};
+
+export type ValidationHandler = (schema: AnyZodObject) => RequestHandler;
 
 export default { handle };
